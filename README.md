@@ -2,7 +2,7 @@
 
 ## 1 - Abstract
 
-*You're Goin' Surfin' on the Bus Net!*
+***You're Goin' Surfin' on the Bus Net!***
 
 A bus net is an amorphous, graph data structure, where nodes, called bus modules, take the form of
 objects with a "query" function, said function taking an optional string argument, and returning
