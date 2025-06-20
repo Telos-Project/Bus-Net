@@ -1,225 +1,214 @@
-let busModule = {
-	tags: [],
-	query: (packet) => {
-		return null;
-	}
-}
-
-let anchor = Object.assign(
-	Object.assign({ }, busModule),
-	{tags: ["anchor"]}
-);
-
-var network = [];
-
-function call(packet, source, connections) {
-
-	source = source != null ? source : module.anchor;
-	connections = connections != null ? connections : network;
-
-	return traverse(source, connections).map(node => {
-
-		if(node == null) return null;
-		if(typeof node.query != "function") return null;
-
-		return node.query(packet);
-	}).filter(item => item != null);
-}
-
-function find(source, connections) {
-
-	source = source != null ? source : module.anchor;
-	connections = connections != null ? connections : network;
-
-	return traverse(source, connections).filter(node => {
-
-		if(node == null) return false;
-		if(Array.isArray(node.tags)) return false;
-
-		return true;
-	});
-}
-
-function connect(source, target, policies, mutual, connections) {
-
-	connections = connections != null ? connections : network;
-	
-	source = Array.isArray(source) ? source : [source];
-	target = Array.isArray(target) ? target : [target];
-
-	policies = Array.isArray(policies) ? policies : [];
-	
-	for(let i = 0; i < source.length; i++) {
-		
-		for(let j = 0; j < target.length; j++) {
-			
-			disconnect(source[i], target[j], connections);
-
-			connections.push([source[i], target[j], policies]);
+let busNetUtils = {
+	anchor: {
+		tags: ["anchor"],
+		query: (packet) => {
+			return null;
 		}
-	}
-	
-	if(mutual)
-		connect(target, source, policies, false, connections);
-}
+	},
+	busModule: {
+		tags: [],
+		query: (packet) => {
+			return null;
+		}
+	},
+	call: (packet, source, connections) => {
 
-function disconnect(source, target, mutual, connections) {
+		source = source != null ? source : module.anchor;
+		connections = connections != null ? connections : busNetUtils.network;
 
-	connections = connections != null ? connections : network;
-	
-	source = Array.isArray(source) ? source : [source];
-	target = Array.isArray(target) ? target : [target];
-	
-	for(let i = 0; i < connections.length; i++) {
-	
-		let valid = false;
-	
-		for(let j = 0; j < source.length && !valid; j++) {
+		return busNetUtils.traverse(source, connections).map(node => {
+
+			if(node == null) return null;
+			if(typeof node.query != "function") return null;
+
+			return node.query(packet);
+		}).filter(item => item != null);
+	},
+	connect: (source, target, policies, mutual, connections) => {
+
+		connections = connections != null ? connections : busNetUtils.network;
+		
+		source = Array.isArray(source) ? source : [source];
+		target = Array.isArray(target) ? target : [target];
+
+		policies = Array.isArray(policies) ? policies : [];
+		
+		for(let i = 0; i < source.length; i++) {
 			
-			for(let k = 0; k < target.length && !valid; k++) {
+			for(let j = 0; j < target.length; j++) {
 				
-				valid =
-					connections[i][0] === source[j] &&
-					connections[i][1] === target[k];
+				busNetUtils.disconnect(source[i], target[j], connections);
+
+				connections.push([source[i], target[j], policies]);
 			}
 		}
 		
-		if(valid) {
-			
-			connections.splice(i, 1);
-			
-			i--;
-		}
-	}
-	
-	if(mutual)
-		disconnect(target, source, false, connections);
-}
+		if(mutual)
+			busNetUtils.connect(target, source, policies, false, connections);
+	},
+	disconnect: (source, target, mutual, connections) => {
 
-function getConnections(source, connections) {
-
-	connections = connections != null ? connections : network;
-	
-	source = Array.isArray(source) ? source : [source];
-	
-	let sourceConnections = [];
-	
-	for(let i = 0; i < connections.length; i++) {
-	
-		for(let j = 0; j < source.length; j++) {
+		connections = connections != null ? connections : busNetUtils.network;
 		
-			if(connections[i][0] === source[j]) {
-			
-				sourceConnections.push(connections[i][1]);
+		source = Array.isArray(source) ? source : [source];
+		target = Array.isArray(target) ? target : [target];
+		
+		for(let i = 0; i < connections.length; i++) {
+		
+			let valid = false;
+		
+			for(let j = 0; j < source.length && !valid; j++) {
 				
-				break;
+				for(let k = 0; k < target.length && !valid; k++) {
+					
+					valid =
+						connections[i][0] === source[j] &&
+						connections[i][1] === target[k];
+				}
+			}
+			
+			if(valid) {
+				
+				connections.splice(i, 1);
+				
+				i--;
 			}
 		}
-	}
-	
-	return sourceConnections;
-}
-
-function getConnectionPolicies(source, target, connections) {
-
-	connections = connections != null ? connections : network;
-
-	for(let i = 0; i < connections.length; i++) {
-
-		if(connections[i][0] === source && connections[i][1] === target)
-			return connections[i][2];
-	}
-
-	return [];
-}
-
-function isConnected(source, target, policies, mutual, connections) {
-
-	connections = connections != null ? connections : network;
-	
-	source = Array.isArray(source) ? source : [source];
-	target = Array.isArray(target) ? target : [target];
-
-	policies = Array.isArray(policies) ? policies : [];
-	
-	for(let i = 0; i < source.length; i++) {
 		
-		let sourceConnections = getConnections(source[i], connections);
+		if(mutual)
+			busNetUtils.disconnect(target, source, false, connections);
+	},
+	find: (source, connections) => {
+
+		source = source != null ? source : module.anchor;
+		connections = connections != null ? connections : busNetUtils.network;
+
+		return busNetUtils.traverse(source, connections).filter(node => {
+
+			if(node == null) return false;
+			if(Array.isArray(node.tags)) return false;
+
+			return true;
+		});
+	},
+	getConnections: (source, connections) => {
+
+		connections = connections != null ? connections : busNetUtils.network;
 		
-		for(let j = 0; j < target.length; j++) {
+		source = Array.isArray(source) ? source : [source];
+		
+		let sourceConnections = [];
+		
+		for(let i = 0; i < connections.length; i++) {
+		
+			for(let j = 0; j < source.length; j++) {
 			
-			if(!sourceConnections.includes(target[j]))
-				return false;
+				if(connections[i][0] === source[j]) {
+				
+					sourceConnections.push(connections[i][1]);
+					
+					break;
+				}
+			}
+		}
+		
+		return sourceConnections;
+	},
+	getConnectionPolicies: (source, target, connections) => {
+
+		connections = connections != null ? connections : busNetUtils.network;
+
+		for(let i = 0; i < connections.length; i++) {
+
+			if(connections[i][0] === source && connections[i][1] === target)
+				return connections[i][2];
+		}
+
+		return [];
+	},
+	isConnected: (source, target, policies, mutual, connections) => {
+
+		connections = connections != null ? connections : busNetUtils.network;
+		
+		source = Array.isArray(source) ? source : [source];
+		target = Array.isArray(target) ? target : [target];
+
+		policies = Array.isArray(policies) ? policies : [];
+		
+		for(let i = 0; i < source.length; i++) {
 			
-			let connectionPolicies =
-				getConnectionPolicies(source[i], target[j], connections);
-
-			if(policies.length != connectionPolicies.length)
-				return false;
-
-			for(let i = 0; i < policies.length; i++) {
-
-				if(policies[i] != connectionPolicies[i])
+			let sourceConnections =
+				busNetUtils.getConnections(source[i], connections);
+			
+			for(let j = 0; j < target.length; j++) {
+				
+				if(!sourceConnections.includes(target[j]))
 					return false;
+				
+				let connectionPolicies =
+					busNetUtils.getConnectionPolicies(
+						source[i], target[j], connections
+					);
+
+				if(policies.length != connectionPolicies.length)
+					return false;
+
+				for(let i = 0; i < policies.length; i++) {
+
+					if(policies[i] != connectionPolicies[i])
+						return false;
+				}
 			}
 		}
-	}
-	
-	return true && (
-		mutual ?
-			isConnected(source, target, false, false, connections) :
-			true
-	);
-}
+		
+		return true && (
+			mutual ?
+				busNetUtils.isConnected(
+					source, target, false, false, connections
+				) :
+				true
+		);
+	},
+	network: [],
+	privateConnection: (path, connection) => {
+		return path.length <= 1;
+	},
+	traverse: (source, connections, path) => {
 
-function privateConnection(path, connection) {
-	return path.length <= 1;
-}
+		connections = connections != null ? connections : busNetUtils.network;
 
-function traverse(source, connections, path) {
+		path = path != null ? path : [];
 
-	connections = connections != null ? connections : network;
+		if(path.includes(source))
+			return;
 
-	path = path != null ? path : [];
+		path.push(source);
+		
+		let sourceConnections =
+			busNetUtils.getConnections(source, connections);
+		
+		for(let i = 0; i < sourceConnections.length; i++) {
 
-	if(path.includes(source))
-		return;
+			let policies =
+				busNetUtils.getConnectionPolicies(
+					source, sourceConnections[i], connections
+				);
+				
+			let valid = true;
+		
+			for(let j = 0; j < policies.length && valid; j++) {
 
-	path.push(source);
-	
-	let sourceConnections = getConnections(source, connections);
-	
-	for(let i = 0; i < sourceConnections.length; i++) {
+				if(!policies[j](path, sourceConnections[i]))
+					valid = false;
+			}
 
-		let policies =
-			getConnectionPolicies(source, sourceConnections[i], connections);
-			
-		let valid = true;
-	
-		for(let j = 0; j < policies.length && valid; j++) {
-
-			if(!policies[j](path, sourceConnections[i]))
-				valid = false;
+			if(valid)
+				busNetUtils.traverse(sourceConnections[i], connections, path);
 		}
-
-		if(valid)
-			traverse(sourceConnections[i], connections, path);
+		
+		return path;
 	}
-	
-	return path;
-}
-
-module.exports = {
-	anchor,
-	busModule,
-	network,
-	call,
-	find,
-	getConnections,
-	getConnectionPolicies,
-	isConnected,
-	connect,
-	disconnect,
-	privateConnection,
-	traverse
 };
+
+if(typeof module == "object")
+	module.exports = busNetUtils;
