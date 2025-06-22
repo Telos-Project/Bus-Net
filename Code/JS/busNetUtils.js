@@ -13,7 +13,7 @@ let busNetUtils = {
 	},
 	call: (packet, source, connections) => {
 
-		source = source != null ? source : module.anchor;
+		source = source != null ? source : busNetUtils.anchor;
 		connections = connections != null ? connections : busNetUtils.network;
 
 		return busNetUtils.traverse(source, connections).map(node => {
@@ -80,7 +80,7 @@ let busNetUtils = {
 	},
 	find: (source, connections) => {
 
-		source = source != null ? source : module.anchor;
+		source = source != null ? source : busNetUtils.anchor;
 		connections = connections != null ? connections : busNetUtils.network;
 
 		return busNetUtils.traverse(source, connections).filter(node => {
