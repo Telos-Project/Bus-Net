@@ -37,14 +37,15 @@ let busNetUtils = {
 			
 			for(let j = 0; j < target.length; j++) {
 				
-				busNetUtils.disconnect(source[i], target[j], connections);
+				if(mutual != -1)
+					busNetUtils.disconnect(source[i], target[j], connections);
 
 				connections.push([source[i], target[j], policies]);
 			}
 		}
 		
-		if(mutual)
-			busNetUtils.connect(target, source, policies, false, connections);
+		if(mutual == true)
+			busNetUtils.connect(target, source, policies, -1, connections);
 	},
 	disconnect: (source, target, mutual, connections) => {
 
