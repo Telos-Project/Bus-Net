@@ -19,7 +19,9 @@ others.
 
 ## 2 - Contents
 
-### 2.1 - Bus Traversals
+### 2.1 - Conventions
+
+#### 2.1.2 - Bus Traversals
 
 Connections between bus modules are unidirectional, and may either be public or private. During
 traversal, the process may traverse any public conncection, but may only traverse a private
@@ -34,15 +36,40 @@ bus module found, and where a list of each of the resulting responses are return
 
 Said list may also be used to filter specific bus modules from the system by their tags.
 
-### 2.2 - Conventions
+#### 2.1.2 - Defaults
 
-#### 2.2.1 - Access and Anchor
+##### 2.1.2.1 - Access and Anchor
 
 The default use case of a bus net is to have a single bus net be globally available across the
 application, and to have a single bus module within the bus net by default, called the bus anchor,
 which any new bus module may connect to.
 
-#### 2.2.2 - Generalized Bus Net
+### 2.2 - General Ontologies
 
-A generalized bus net is one where nodes may be values other than bus modules, and connection
-properties may be values other than private or public, allowing for more complex emergent behavior.
+An general ontology is an arbitrary entity-relationship graph.
+
+#### 2.2.1 - Types
+
+##### 2.2.1.1 - Generalized Bus Net
+
+A generalized bus net is a general ontology which contains a bus net.
+
+##### 2.2.1.2 - Standard Ontology
+
+A standard ontology is a graph where the nodes are typed key-value pairs and the connections are
+directional and typed.
+
+The set of types used for the nodes and connections of a standard ontology is referred to as its
+schema.
+
+#### 2.2.2 - Application
+
+##### 2.2.2.1 - Derivation
+
+General ontologies can be derived through analysis of collections of unstructured data referred to
+as evidence.
+
+##### 2.2.2.2 - Projection
+
+The development of platforms to conform to existing general ontologies is referred to as ontology
+projection.
