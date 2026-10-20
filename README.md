@@ -21,7 +21,7 @@ others.
 
 ### 2.1 - Conventions
 
-#### 2.1.2 - Bus Traversals
+#### 2.1.1 - Bus Traversals
 
 Connections between bus modules are unidirectional, and may either be public or private. During
 traversal, the process may traverse any public conncection, but may only traverse a private
