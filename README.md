@@ -12,7 +12,7 @@ make them far more versatile than traditional bus architectures.
 
 In this manner, they form a scalable and modular intranet of services within an otherwise
 monolithic environment. As such, they can scale seamlessly under scope creep and pivots, while
-dynamically accomodating plugins at compile or run time.
+dynamically accommodating plugins at compile or run time.
 
 Applications which may benefit from this include game engines and language interpreters, among
 others.
@@ -24,7 +24,7 @@ others.
 #### 2.1.1 - Bus Traversals
 
 Connections between bus modules are unidirectional, and may either be public or private. During
-traversal, the process may traverse any public conncection, but may only traverse a private
+traversal, the process may traverse any public connection, but may only traverse a private
 connection if the traversal began at the source node of said connection.
 
 A traversal originating from a given bus module and following all of the aforementioned rules
@@ -46,7 +46,7 @@ which any new bus module may connect to.
 
 ### 2.2 - General Ontologies
 
-An general ontology is an arbitrary entity-relationship graph.
+A general ontology is an arbitrary entity-relationship graph.
 
 #### 2.2.1 - Types
 
